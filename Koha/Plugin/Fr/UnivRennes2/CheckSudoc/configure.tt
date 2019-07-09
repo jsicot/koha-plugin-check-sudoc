@@ -1,0 +1,59 @@
+  [% USE KohaDates %]
+    [% INCLUDE 'doc-head-open.inc' %]
+    <title>Koha: Plugin choix des langues depuis les valeurs autorisées: Configuration</title>
+    [% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body>
+    [% INCLUDE 'header.inc' %]
+    [% INCLUDE 'cat-search.inc' %]
+    
+    <div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Accueil</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Configuration du plugin Check Sudoc</div>
+    
+</div>
+    <div class="main container-fluid">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+                [% IF config_success %]
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Succès</h3>
+                        </div>
+                        <div class="panel-body">[% config_success %] <a class="btn btn-xs btn-default" href="/cgi-bin/koha/plugins/plugins-home.pl">Retour</a></div>
+                    </div>
+                [% END %]  
+
+
+    <!-- We can access our own plugins resource files using the PLUGIN_PATH variable. -->
+    <h3>Configuration</h3>
+
+    <!-- Notice our form here has no 'action', this is good, it means that our forms will always get passed back to 'plugins/run.pl'. You could hard code it instead if you prefer -->
+    <form method="get">
+        <!-- Always pass these two parameters so the plugin system knows what to execute! -->
+        <input type="hidden" name="class" value="[% CLASS %]"/>
+        <input type="hidden" name="method" value="[% METHOD %]"/> 
+        
+              
+        <p>
+        <label for="iln">ILN&nbsp;: </label>
+        <input type="text" name="iln" value="[% iln %]" />
+        </p>
+                     
+        [% IF rcr %]
+        	        <label for="rcr">RCR from ILN&nbsp;: </label> 
+
+	        <p>
+				<select id="rcr" class="multiselect" multiple="multiple" readonly="readonly">
+				[% FOR r IN rcr %]
+					<option value="[% r %]">[% r | html %]</option>
+				[% END %]
+				</select>
+			</p>
+        [% END %]
+
+        <input type="hidden" name="save" value="1" />
+        <input type="submit" value="Save configuration" />
+
+    </form>
+
+
+[% INCLUDE 'intranet-bottom.inc' %]
