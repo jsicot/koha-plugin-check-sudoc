@@ -97,7 +97,7 @@ sub getRcrFromPpn {
   	chomp($ppn);
   	#$ppn = "001593692";
   	my $multiwhere = "https://www.sudoc.fr/services/multiwhere/";
-	my @rcr = [];
+	my @rcr;
 	my $svc = &construct_svc($ppn,$multiwhere);
 	my $json = get( $svc );
 	#die "Could not get $svc!" unless defined $json;	
@@ -110,15 +110,15 @@ sub getRcrFromPpn {
 		
 	    if($decoded->{'sudoc'}{'query'}{'result'}{'library'} && !$decoded->{'sudoc'}{'error'}){
 		    if(ref($decoded->{'sudoc'}{'query'}{'result'}{'library'}) eq 'ARRAY') {
-			    my @results = @{ $decoded->{'sudoc'}{'query'}{'result'}{'library'} };
+			    my (@results) = @{ $decoded->{'sudoc'}{'query'}{'result'}{'library'} };
 			    foreach my $r ( @results  ) {
-				     my $rcr = "$r->{'rcr'}"; 
-				     push ( @rcr, $rcr );
+				     push ( @rcr, $r->{'rcr'} ) unless (ref($r->{'rcr'}) eq 'ARRAY');
 		    	}
-		    }
-		     else { 
+		    } else { 
 		 	    push (@rcr, $decoded->{'sudoc'}{'query'}{'result'}{'library'}{'rcr'}); 
 		     }
+
+			
 		    return @rcr;
 	    }
 	    else { return "null";}

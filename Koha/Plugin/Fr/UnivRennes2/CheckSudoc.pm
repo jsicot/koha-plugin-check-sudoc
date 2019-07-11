@@ -239,10 +239,10 @@ function iln2rcr(ILN, PPN) {
 	var url = "https://www.idref.fr/services/iln2rcr/" + ILN + "&format=text/json";
 	rcr = "| . $self->retrieve_data('rcr') . q|";
 	var rcrArray = rcr.split("\|");
-	console.log(rcrArray);
+	//console.log(rcrArray);
 		jQuery.each(rcrArray, function (i, r) {
 			isSudoc(r, PPN)
-			console.log(r);
+			//console.log(r);
 		});
 		controlSudoc();
 
@@ -397,6 +397,7 @@ sub uninstall() {
     my ( $self, $args ) = @_;
 
 }
+
 
 
 
