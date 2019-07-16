@@ -1,6 +1,6 @@
   [% USE KohaDates %]
     [% INCLUDE 'doc-head-open.inc' %]
-    <title>Koha: Plugin choix des langues depuis les valeurs autorisées: Configuration</title>
+    <title>Koha: CheckSudoc configuration du Plugin</title>
     [% INCLUDE 'doc-head-close.inc' %]
 </head>
 <body>

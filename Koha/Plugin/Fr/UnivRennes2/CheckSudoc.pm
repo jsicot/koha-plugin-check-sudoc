@@ -110,12 +110,13 @@ sub intranet_js {
         <script>
 	$(document).ready(function () {
 		if (jQuery('body#catalog_detail').size() > 0) {
-			checkSudoc();
+			getItems(checkSudoc);
 		}
 	});
 
 
 function checkSudoc() {
+	console.log("checkSudoc function executed");
 	jQuery('#toolbar').after('<div id="notifications"></div>');
 	if (jQuery("#ppn").size() > 0) {
 		var PPN = jQuery('#ppn').text();
@@ -124,10 +125,8 @@ function checkSudoc() {
 	}
 	else if (jQuery('.ISBN').size() > 0) {
 		var isbns = getISBN();
-		console.log(isbns);
 		isbn2ppn(isbns);
-	}	
-
+	}
 }
 
 //--------------------------
@@ -171,7 +170,7 @@ function isMerged(PPN) {
 			if (data.sudoc && data.sudoc.query.result.ppn.length > 0) {
 				var PPNmerged = data.sudoc.query.result.ppn;
 				if (PPN) {
-					var url = jsHost + OPAC_SVC + 'json.getSru.php?index=dc.identifier&q=' + PPNmerged + '&callback=?';
+					var url = '//catalogue.bu.univ-rennes2.fr/r2microws/json.getSru.php?index=dc.identifier&q=' + PPNmerged + '&callback=?';
 					jQuery.getJSON(url)
 						.done(function (data) {
 							if (data && data.record) {
@@ -220,7 +219,6 @@ function isSudoc(rcr, PPN) {
 		jQuery('.rcr' + rcr).each(function () {
 			jQuery(this).addClass('iln');
 			jQuery(this).append(' <i class="fa fa-home"></i>');
-			
 		})
 	}
 		
@@ -235,17 +233,16 @@ function isSudoc(rcr, PPN) {
 	}
 }
 
-function iln2rcr(ILN, PPN) {
+function iln2rcr(ILN, PPN, callback) {
+  setTimeout(function() {
 	var url = "https://www.idref.fr/services/iln2rcr/" + ILN + "&format=text/json";
 	rcr = "| . $self->retrieve_data('rcr') . q|";
 	var rcrArray = rcr.split("\|");
-	//console.log(rcrArray);
 		jQuery.each(rcrArray, function (i, r) {
 			isSudoc(r, PPN)
-			//console.log(r);
 		});
-		controlSudoc();
-
+	callback();
+  }, 1000);
 }
 
 function isbn2ppn(arr) {
@@ -293,9 +290,30 @@ function locateInSudoc(PPN) {
 					}
 				}
 			}
-			iln2rcr("| . $self->retrieve_data('iln') . q|", PPN);
-
+			iln2rcr("| . $self->retrieve_data('iln') . q|", PPN, controlSudoc);
 		});
+}
+
+function getItems(callback) {
+   setTimeout(function() {	
+	   console.log("getItems function executed");
+    var biblionumber = jQuery('#biblionumber').text();
+    var url = '//catalogue.bu.univ-rennes2.fr/r2microws/json.getSru.php?index=rec.id&q=' + biblionumber + '&callback=?';
+    itemstatus = new Array();
+    jQuery.getJSON(url)
+        .done(function (data) {
+            jQuery.each(data.record, function (i, record) {
+                jQuery.each(record.item, function (x, item) {
+                    itemstatus.push(item.withdrawnstatus);
+                });
+            });
+            if (jQuery.inArray("false", itemstatus) == '-1') {
+	            console.log("noitem");
+                jQuery('#catalogue_detail_biblio').after('<div id="noitemsavailable"></div>');
+            };
+        });
+      callback();
+  }, 1500);
 }
 
 
